@@ -163,10 +163,14 @@
             </DataGrid>
 
             <CheckBox Content="Wipe Source File After Process" IsChecked="{Binding WipeSourceFile}"/>
+            <Grid>
+                
+            </Grid>
             <Button Content="Remove Checked" HorizontalAlignment="Right" Width="100" Margin="5"
                 Command="{Binding RemoveSelectedFilesCommand}"/>
             <Button Content="Process" HorizontalAlignment="Right" Width="100" Margin="5"
                 Command="{Binding ProcessCommand}"/>
+            <ProgressBar Minimum="0" Maximum="{Binding TotalFileCount}" Value="{Binding ProcessedFileCount}" HorizontalAlignment="Stretch" />
         </StackPanel>
     </DockPanel>
 </Window>

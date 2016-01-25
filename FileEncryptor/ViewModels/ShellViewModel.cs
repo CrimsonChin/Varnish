@@ -5,6 +5,7 @@ using Prism.Mvvm;
 using Services.Interfaces;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Controls;
@@ -24,6 +25,8 @@ namespace FileEncryptor.ViewModels
         private bool _isInvalidPassword;
         private string _verifyPassword;
         private ICryptographyService _cryptographyService;
+        private int _processedFileCount;
+        private int _totalFileCount;
 
         public ShellViewModel(IFileService fileService, ICryptographyService cryptographyService)
         {
@@ -45,7 +48,7 @@ namespace FileEncryptor.ViewModels
 
         public EncryptionMode Mode { get; set; }
 
-        public ObservableCollection<FileViewModel> FilesToBeProcessed { get; set; }
+        public ObservableCollection<FileViewModel> FilesToBeProcessed { get; }
 
         public ICommand SelectSourceFolderPathCommand { get; set; }
 
@@ -80,6 +83,8 @@ namespace FileEncryptor.ViewModels
                 FileViewModel fileViewModel = new FileViewModel(file);
                 FilesToBeProcessed.Add(fileViewModel);
             }
+
+            TotalFileCount = FilesToBeProcessed.Count();
         }
 
         public ICommand SelectOutputFolderPathCommand { get; set; }
@@ -214,6 +219,7 @@ namespace FileEncryptor.ViewModels
                 Directory.CreateDirectory(OuputFolderPath);
             }
 
+            ProcessedFileCount = 0;
             foreach (var file in FilesToBeProcessed)
             {
                 _cryptographyService.EncryptFile(file.FilePath, OuputFolderPath, _password);
@@ -222,6 +228,9 @@ namespace FileEncryptor.ViewModels
                 {
                     File.Delete(file.FilePath);
                 }
+
+                ProcessedFileCount = ProcessedFileCount + 1;
+                Debug.WriteLine(ProcessedFileCount);
             }
 
             if (Directory.GetFiles(SourceFolderPath).Count() == 0)
@@ -230,6 +239,32 @@ namespace FileEncryptor.ViewModels
             }
 
             LoadFolderContents();
+        }
+
+        public int TotalFileCount
+        {
+            get
+            {
+                return FilesToBeProcessed.Any() ? _totalFileCount : 100;
+            }
+
+            set
+            {
+                SetProperty(ref _totalFileCount, value);
+            }
+        }
+
+        public int ProcessedFileCount
+        {
+            get
+            {
+                return _processedFileCount;
+            }
+
+            set
+            {
+                SetProperty(ref _processedFileCount, value);
+            }
         }
     }
 }
