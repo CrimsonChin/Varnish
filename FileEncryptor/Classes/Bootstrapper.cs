@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-using FileEncryptor.Views;
+using FileEncyptor.Views;
 using Microsoft.Practices.Unity;
 using Prism.Unity;
 using Services.Classes;

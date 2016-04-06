@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace FileEncryptor.Views
+namespace FileEncyptor.Views
 {
     /// <summary>
     /// Interaction logic for ShellView.xaml

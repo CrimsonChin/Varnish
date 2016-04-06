@@ -10,7 +10,7 @@ namespace Services.Classes
 
         IEnumerable<string> IFileService.LoadFiles(string folderPath)
         {
-            return Directory.EnumerateFiles(folderPath);
+            return Directory.EnumerateFiles(folderPath, "*", SearchOption.AllDirectories);
         }
 
         #endregion
