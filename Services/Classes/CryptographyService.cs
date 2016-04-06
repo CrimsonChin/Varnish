@@ -7,95 +7,75 @@ namespace Services.Classes
 {
     public class CryptographyService : ICryptographyService
     {
-        private byte[] saltBytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+        #region Implementation of ICryptographyService
 
-        public static byte[] HashPassword(string password)
-        {
-            byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
-            return SHA256.Create().ComputeHash(passwordBytes);
-        }
+        private readonly byte[] _saltBytes = {1, 2, 3, 4, 5, 6, 7, 8};
 
         public void EncryptFile(string plainTextFile, string outputPath, string password)
         {
-            byte[] bytesToBeEncrypted = File.ReadAllBytes(plainTextFile);
-            byte[] passwordBytes = HashPassword(password);
-            byte[] bytesEncrypted = AES_Encrypt(bytesToBeEncrypted, passwordBytes);
+            var bytesToBeEncrypted = File.ReadAllBytes(plainTextFile);
+            var passwordBytes = HashPassword(password);
+            var bytesEncrypted = AesEncrypt(bytesToBeEncrypted, passwordBytes);
 
-            string filename = Path.GetFileName(plainTextFile);
-            string fileEncrypted = Path.Combine(outputPath, filename);
+            var filename = Path.GetFileName(plainTextFile);
+            var fileEncrypted = Path.Combine(outputPath, filename);
 
             File.WriteAllBytes(fileEncrypted, bytesEncrypted);
         }
 
         public void DecryptFile(string fileEncrypted, string outputFilePath, string password)
         {
-            byte[] bytesToBeDecrypted = File.ReadAllBytes(fileEncrypted);
-            byte[] passwordBytes = HashPassword(password);
-            byte[] bytesDecrypted = AES_Decrypt(bytesToBeDecrypted, passwordBytes);
+            var bytesToBeDecrypted = File.ReadAllBytes(fileEncrypted);
+            var passwordBytes = HashPassword(password);
+            var bytesDecrypted = AesDecrypt(bytesToBeDecrypted, passwordBytes);
 
-            string filename = Path.GetFileName(fileEncrypted);
-            string file = Path.Combine(outputFilePath, filename);
+            var filename = Path.GetFileName(fileEncrypted);
+            var file = Path.Combine(outputFilePath, filename);
 
             File.WriteAllBytes(file, bytesDecrypted);
         }
 
-        public byte[] DecryptFileToArray(string fileEncrypted, string password)
-        {
-            byte[] bytesToBeDecrypted = File.ReadAllBytes(fileEncrypted);
-            byte[] passwordBytes = HashPassword(password);
+        #endregion
 
-            return AES_Decrypt(bytesToBeDecrypted, passwordBytes);
+        #region Private Methods
+
+        private static byte[] HashPassword(string password)
+        {
+            var passwordBytes = Encoding.UTF8.GetBytes(password);
+            return SHA256.Create().ComputeHash(passwordBytes);
         }
 
-        private byte[] AES_Encrypt(byte[] bytesToBeEncrypted, byte[] passwordBytes)
+        private byte[] AesEncrypt(byte[] bytesToBeEncrypted, byte[] passwordBytes)
         {
-            byte[] encryptedBytes = null;
-
-            using (MemoryStream memorySteam = new MemoryStream())
-            {
-                using (RijndaelManaged AES = new RijndaelManaged())
-                {
-                    AES.KeySize = 256;
-                    AES.BlockSize = 128;
-
-                    var key = new Rfc2898DeriveBytes(passwordBytes, saltBytes, 1000);
-                    AES.Key = key.GetBytes(AES.KeySize / 8);
-                    AES.IV = key.GetBytes(AES.BlockSize / 8);
-
-                    AES.Mode = CipherMode.CBC;
-
-                    using (var cryptoStream = new CryptoStream(memorySteam, AES.CreateEncryptor(), CryptoStreamMode.Write))
-                    {
-                        cryptoStream.Write(bytesToBeEncrypted, 0, bytesToBeEncrypted.Length);
-                        cryptoStream.Close();
-                    }
-                    encryptedBytes = memorySteam.ToArray();
-                }
-            }
-
-            return encryptedBytes;
+            return Cipher(true, bytesToBeEncrypted, passwordBytes);
         }
 
-        private byte[] AES_Decrypt(byte[] bytesToBeDecrypted, byte[] passwordBytes)
+        private byte[] AesDecrypt(byte[] bytesToBeDecrypted, byte[] passwordBytes)
         {
-            byte[] decryptedBytes = null;
+            return Cipher(false, bytesToBeDecrypted, passwordBytes);
+        }
 
-            using (MemoryStream memoryStream = new MemoryStream())
+        private byte[] Cipher(bool isEncrypt, byte[] fileBytes, byte[] passwordBytes)
+        {
+            byte[] decryptedBytes;
+
+            using (var memoryStream = new MemoryStream())
             {
-                using (RijndaelManaged AES = new RijndaelManaged())
+                using (var aes = new RijndaelManaged())
                 {
-                    AES.KeySize = 256;
-                    AES.BlockSize = 128;
+                    aes.KeySize = 256;
+                    aes.BlockSize = 128;
 
-                    var key = new Rfc2898DeriveBytes(passwordBytes, saltBytes, 1000);
-                    AES.Key = key.GetBytes(AES.KeySize / 8);
-                    AES.IV = key.GetBytes(AES.BlockSize / 8);
+                    var key = new Rfc2898DeriveBytes(passwordBytes, _saltBytes, 1000);
+                    aes.Key = key.GetBytes(aes.KeySize/8);
+                    aes.IV = key.GetBytes(aes.BlockSize/8);
 
-                    AES.Mode = CipherMode.CBC;
+                    aes.Mode = CipherMode.CBC;
 
-                    using (var cryptoStream = new CryptoStream(memoryStream, AES.CreateDecryptor(), CryptoStreamMode.Write))
+                    var cryptoTransform = isEncrypt ? aes.CreateEncryptor() : aes.CreateDecryptor();
+                    using (var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Write))
                     {
-                        cryptoStream.Write(bytesToBeDecrypted, 0, bytesToBeDecrypted.Length);
+                        cryptoStream.Write(fileBytes, 0, fileBytes.Length);
                         cryptoStream.Close();
                     }
                     decryptedBytes = memoryStream.ToArray();
@@ -104,5 +84,7 @@ namespace Services.Classes
 
             return decryptedBytes;
         }
+
+        #endregion
     }
 }

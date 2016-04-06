@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Data;
 
-namespace FileEncryptor.Converters
+namespace FileEncyptor.Converters
 {
     public class EnumToBooleanConverter : IValueConverter
     {

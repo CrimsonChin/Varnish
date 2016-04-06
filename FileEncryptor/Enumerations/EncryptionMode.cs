@@ -1,6 +1,6 @@
-﻿namespace FileEncryptor.Enumerations
+﻿namespace FileEncyptor.Enumerations
 {
-    enum EncryptionMode
+    internal enum EncryptionMode
     {
         Encrypt,
         Decrypt

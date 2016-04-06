@@ -1,30 +1,31 @@
-﻿using FileEncryptor.Enumerations;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using Prism.Commands;
-using Prism.Mvvm;
-using Services.Interfaces;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
+using FileEncyptor.Enumerations;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using Prism.Commands;
+using Prism.Mvvm;
+using Services.Interfaces;
 
-namespace FileEncryptor.ViewModels
+namespace FileEncyptor.ViewModels
 {
-    class ShellViewModel : BindableBase
+    internal class ShellViewModel : BindableBase
     {
         private const string DefaultFolderName = "Select Folder";
         private const string FolderSelectionTitle = "Select The Folder To Process";
 
-        private IFileService _fileService;
+        private readonly IFileService _fileService;
+        private readonly ICryptographyService _cryptographyService;
+
         private string _sourceFolderPath;
         private string _encryptedFolderPath;
         private string _password;
         private bool _isInvalidPassword;
         private string _verifyPassword;
-        private ICryptographyService _cryptographyService;
         private int _processedFileCount;
         private int _totalFileCount;
 
@@ -61,10 +62,10 @@ namespace FileEncryptor.ViewModels
                 return;
             }
 
-            var ouputFolderName = string.Format("{0} Copy", Path.GetFileName(SourceFolderPath));
+            var ouputFolderName = $"{Path.GetFileName(SourceFolderPath)} Copy";
 
-            DirectoryInfo parentFolderInfo = Directory.GetParent(SourceFolderPath);
-            string parentFolder = parentFolderInfo != null ? parentFolderInfo.FullName : SourceFolderPath;
+            var parentFolderInfo = Directory.GetParent(SourceFolderPath);
+            var parentFolder = parentFolderInfo?.FullName ?? SourceFolderPath;
             OuputFolderPath = Path.Combine(parentFolder, ouputFolderName);
 
             LoadFolderContents();
@@ -80,7 +81,7 @@ namespace FileEncryptor.ViewModels
             FilesToBeProcessed.Clear();
             foreach (var file in _fileService.LoadFiles(SourceFolderPath))
             {
-                FileViewModel fileViewModel = new FileViewModel(file);
+                var fileViewModel = new FileViewModel(file);
                 FilesToBeProcessed.Add(fileViewModel);
             }
 
@@ -95,7 +96,7 @@ namespace FileEncryptor.ViewModels
         }
 
         //TODO move to service
-        private string SelectFolder()
+        private static string SelectFolder()
         {
             var filename = string.Empty;
 
@@ -143,10 +144,7 @@ namespace FileEncryptor.ViewModels
 
         public bool IsInvalidPassword
         {
-            get
-            {
-                return _isInvalidPassword;
-            }
+            get { return _isInvalidPassword; }
 
             set
             {
@@ -206,10 +204,10 @@ namespace FileEncryptor.ViewModels
         private bool CanExecuteEncrypt()
         {
             return !(string.IsNullOrWhiteSpace(SourceFolderPath)
-                || string.IsNullOrWhiteSpace(OuputFolderPath)
-                || string.IsNullOrWhiteSpace(_password)
-                || string.IsNullOrWhiteSpace(_verifyPassword)
-                || IsInvalidPassword);
+                     || string.IsNullOrWhiteSpace(OuputFolderPath)
+                     || string.IsNullOrWhiteSpace(_password)
+                     || string.IsNullOrWhiteSpace(_verifyPassword)
+                     || IsInvalidPassword);
         }
 
         private void Process()
@@ -222,7 +220,15 @@ namespace FileEncryptor.ViewModels
             ProcessedFileCount = 0;
             foreach (var file in FilesToBeProcessed)
             {
-                _cryptographyService.EncryptFile(file.FilePath, OuputFolderPath, _password);
+                if (Mode == EncryptionMode.Encrypt)
+                {
+                    _cryptographyService.EncryptFile(file.FilePath, OuputFolderPath, _password);
+                }
+                else
+                {
+                    _cryptographyService.DecryptFile(file.FilePath, OuputFolderPath, _password);
+                }
+
 
                 if (WipeSourceFile)
                 {
@@ -233,7 +239,7 @@ namespace FileEncryptor.ViewModels
                 Debug.WriteLine(ProcessedFileCount);
             }
 
-            if (Directory.GetFiles(SourceFolderPath).Count() == 0)
+            if (!Directory.GetFiles(SourceFolderPath).Any())
             {
                 Directory.Delete(SourceFolderPath);
             }
@@ -243,28 +249,16 @@ namespace FileEncryptor.ViewModels
 
         public int TotalFileCount
         {
-            get
-            {
-                return FilesToBeProcessed.Any() ? _totalFileCount : 100;
-            }
+            get { return FilesToBeProcessed.Any() ? _totalFileCount : 100; }
 
-            set
-            {
-                SetProperty(ref _totalFileCount, value);
-            }
+            set { SetProperty(ref _totalFileCount, value); }
         }
 
         public int ProcessedFileCount
         {
-            get
-            {
-                return _processedFileCount;
-            }
+            get { return _processedFileCount; }
 
-            set
-            {
-                SetProperty(ref _processedFileCount, value);
-            }
+            set { SetProperty(ref _processedFileCount, value); }
         }
     }
 }

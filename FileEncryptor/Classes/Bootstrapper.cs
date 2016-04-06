@@ -1,13 +1,13 @@
-﻿using Prism.Unity;
-using System.Windows;
-using Microsoft.Practices.Unity;
+﻿using System.Windows;
 using FileEncryptor.Views;
-using Services.Interfaces;
+using Microsoft.Practices.Unity;
+using Prism.Unity;
 using Services.Classes;
+using Services.Interfaces;
 
-namespace FileEncryptor.Classes
+namespace FileEncyptor.Classes
 {
-    class Bootstrapper : UnityBootstrapper 
+    internal class Bootstrapper : UnityBootstrapper 
     {
         protected override DependencyObject CreateShell()
         {
@@ -23,14 +23,8 @@ namespace FileEncryptor.Classes
         {
             Container.RegisterType<IFileService, FileService>();
             Container.RegisterType<ICryptographyService, CryptographyService>();
-            Container.RegisterType<IZipFileService, ZipFileService>();
-                        
-            base.ConfigureContainer();
-        }
 
-        protected override void ConfigureModuleCatalog()
-        {
-            base.ConfigureModuleCatalog();
+            base.ConfigureContainer();
         }
     }
 }

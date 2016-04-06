@@ -3,12 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:FileEncryptor.Views"
         mc:Ignorable="d"
-        xmlns:converters="clr-namespace:FileEncryptor.Converters"
-        xmlns:enums="clr-namespace:FileEncryptor.Enumerations"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:mvvm="http://prismlibrary.com/"
+        xmlns:converters="clr-namespace:FileEncyptor.Converters"
+        xmlns:enums="clr-namespace:FileEncyptor.Enumerations"
         mvvm:ViewModelLocator.AutoWireViewModel="True"
         Title="Varnish File Encryptor" Height="700" Width="650">
     <Window.Resources>

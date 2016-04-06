@@ -1,5 +1,5 @@
-﻿using FileEncryptor.Classes;
-using System.Windows;
+﻿using System.Windows;
+using FileEncyptor.Classes;
 
 namespace FileEncryptor
 {

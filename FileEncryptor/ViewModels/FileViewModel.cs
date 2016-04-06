@@ -1,33 +1,19 @@
-﻿using Prism.Mvvm;
-using System.IO;
+﻿using System.IO;
+using Prism.Mvvm;
 
-namespace FileEncryptor.ViewModels
+namespace FileEncyptor.ViewModels
 {
-    class FileViewModel : BindableBase
+    internal class FileViewModel : BindableBase
     {
-        private string _filePath;
-
         public FileViewModel(string filepath)
         {
-            _filePath = filepath;
+            FilePath = filepath;
         }
 
         public bool IsSelected { get; set; }
 
-        public string FileName
-        {
-            get
-            {
-                return Path.GetFileName(_filePath);
-            }
-        }
+        public string FileName => Path.GetFileName(FilePath);
 
-        public string FilePath
-        {
-            get
-            {
-                return _filePath;
-            }
-        }
+        public string FilePath { get; }
     }
 }
