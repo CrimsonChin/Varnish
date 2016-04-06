@@ -7,9 +7,5 @@ WPF File Encryptor and encrypted image viewer using PRISM.
 
 ## To Do
 - [ ] Add unit tests.
-- [ ] Rename "photo viewer" to image viewer.
-- [ ] Address project namespaces.
-- [ ] Consider creating file extension .varn
-- [ ] Consider storing file information at the start of an encrypted file.
 - [ ] Make async.
 - [ ] fix view models and services to use either a secure string or the encrypted hash.  
