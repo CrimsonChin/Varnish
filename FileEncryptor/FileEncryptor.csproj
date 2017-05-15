@@ -68,8 +68,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Classes\RelayCommand ofT.cs" />
     <Compile Include="Classes\RelayCommand.cs" />
+    <Compile Include="Classes\RelayCommandOfT.cs" />
     <Compile Include="Classes\ViewModelBase.cs" />
     <Compile Include="Converters\EnumToBooleanConverter.cs" />
     <Compile Include="Enumerations\EncryptionMode.cs" />
