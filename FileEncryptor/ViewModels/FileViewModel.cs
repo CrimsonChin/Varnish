@@ -1,9 +1,8 @@
 ﻿using System.IO;
-using Prism.Mvvm;
 
 namespace FileEncyptor.ViewModels
 {
-    internal class FileViewModel : BindableBase
+    internal class FileViewModel
     {
         public FileViewModel(string filepath)
         {

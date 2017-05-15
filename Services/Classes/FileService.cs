@@ -6,14 +6,9 @@ namespace Services.Classes
 {
     public class FileService : IFileService
     {
-        #region Implementation of IFileService
-
         IEnumerable<string> IFileService.LoadFiles(string folderPath)
         {
             return Directory.EnumerateFiles(folderPath, "*", SearchOption.AllDirectories);
         }
-
-        #endregion
-
     }
 }

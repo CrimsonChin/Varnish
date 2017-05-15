@@ -5,10 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-        xmlns:mvvm="http://prismlibrary.com/"
         xmlns:converters="clr-namespace:FileEncyptor.Converters"
         xmlns:enums="clr-namespace:FileEncyptor.Enumerations"
-        mvvm:ViewModelLocator.AutoWireViewModel="True"
         Title="Varnish File Encryptor" Height="700" Width="650">
     <Window.Resources>
         <ResourceDictionary>
