@@ -5,15 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
+using FileEncyptor.Classes;
 using FileEncyptor.Enumerations;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Prism.Commands;
-using Prism.Mvvm;
 using Services.Interfaces;
 
 namespace FileEncyptor.ViewModels
 {
-    internal class ShellViewModel : BindableBase
+    internal class ShellViewModel : ViewModelBase
     {
         private const string DefaultFolderName = "Select Folder";
         private const string FolderSelectionTitle = "Select The Folder To Process";
@@ -34,14 +33,14 @@ namespace FileEncyptor.ViewModels
             _fileService = fileService;
             _cryptographyService = cryptographyService;
 
-            SelectSourceFolderPathCommand = new DelegateCommand(SelectSourceFolderPath);
-            SelectOutputFolderPathCommand = new DelegateCommand(SelectOutputFolder);
+            SelectSourceFolderPathCommand = new RelayCommand(SelectSourceFolderPath);
+            SelectOutputFolderPathCommand = new RelayCommand(SelectOutputFolder);
 
-            PasswordChangedCommand = new DelegateCommand<PasswordBox>(PasswordChanged);
-            VerifyPasswordChangedCommand = new DelegateCommand<PasswordBox>(VerifyPasswordChanged);
+            PasswordChangedCommand = new RelayCommand<PasswordBox>(PasswordChanged);
+            VerifyPasswordChangedCommand = new RelayCommand<PasswordBox>(VerifyPasswordChanged);
 
-            ProcessCommand = new DelegateCommand(Process, CanExecuteEncrypt);
-            RemoveSelectedFilesCommand = new DelegateCommand(RemoveSelectedFiles);
+            ProcessCommand = new RelayCommand(Process, CanExecuteEncrypt);
+            RemoveSelectedFilesCommand = new RelayCommand(RemoveSelectedFiles);
 
             FilesToBeProcessed = new ObservableCollection<FileViewModel>();
             Mode = EncryptionMode.Encrypt;
@@ -199,7 +198,7 @@ namespace FileEncyptor.ViewModels
 
         public bool WipeSourceFile { get; set; }
 
-        public DelegateCommand ProcessCommand { get; set; }
+        public RelayCommand ProcessCommand { get; set; }
 
         private bool CanExecuteEncrypt()
         {
